@@ -92,8 +92,22 @@ const ProductDetails = () => {
   }
 
   // Parse sizes and colors
-  const sizes = product.sizes ? JSON.parse(product.sizes) : [];
-  const colors = product.colors ? JSON.parse(product.colors) : [];
+  let sizes = [];
+  let colors = [];
+  
+  try {
+    sizes = product.sizes ? (Array.isArray(JSON.parse(product.sizes)) ? JSON.parse(product.sizes) : []) : [];
+  } catch (error) {
+    console.error('Error parsing sizes:', error);
+    sizes = [];
+  }
+  
+  try {
+    colors = product.colors ? (Array.isArray(JSON.parse(product.colors)) ? JSON.parse(product.colors) : []) : [];
+  } catch (error) {
+    console.error('Error parsing colors:', error);
+    colors = [];
+  }
 
   // Calculate discount percentage
   const discountPercentage = product.discountPrice 

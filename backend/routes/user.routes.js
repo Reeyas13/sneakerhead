@@ -55,18 +55,25 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt for:', email);
     
     // Find user
     const user = await User.findOne({ where: { email } });
     
     if (!user) {
+      console.log('User not found:', email);
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Check password
+    console.log('User found:', user.email, 'Role:', user.role);
+    
+    // Check password - add direct comparison for debugging
+    console.log('Attempting to validate password');
     const isPasswordValid = await user.comparePassword(password);
+    console.log('Password validation result:', isPasswordValid);
     
     if (!isPasswordValid) {
+      console.log('Invalid password for user:', email);
       return res.status(401).json({ message: 'Invalid password' });
     }
     

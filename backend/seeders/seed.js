@@ -14,23 +14,21 @@ async function seedDatabase() {
     await sequelize.sync({ force: true });
     console.log('Database synchronized. All tables dropped and recreated.');
 
-    // Create admin user
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    // Create admin user - let the model hooks handle the password hashing
     const admin = await User.create({
       username: 'admin',
       email: 'admin@sneakerhead.com',
-      password: adminPassword,
+      password: 'admin123', // Model hooks will hash this
       fullName: 'Admin User',
       role: 'admin'
     });
     console.log('Admin user created:', admin.username);
 
-    // Create regular user
-    const userPassword = await bcrypt.hash('user123', 10);
+    // Create regular user - let the model hooks handle the password hashing
     const user = await User.create({
       username: 'user',
       email: 'user@example.com',
-      password: userPassword,
+      password: 'user123', // Model hooks will hash this
       fullName: 'Regular User',
       address: '123 Main St, Kathmandu',
       phone: '9876543210',

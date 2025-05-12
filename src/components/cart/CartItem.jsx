@@ -9,8 +9,8 @@ const CartItem = ({ item }) => {
   // Get product from the item
   const product = item.Product;
   
-  // Calculate item total
-  const itemTotal = item.price * item.quantity;
+  // Calculate item total (with type checking)
+  const itemTotal = typeof item.price === 'number' && typeof item.quantity === 'number' ? item.price * item.quantity : 0;
   
   const handleQuantityChange = async (newQuantity) => {
     if (newQuantity < 1 || newQuantity > product.countInStock) return;
@@ -89,10 +89,10 @@ const CartItem = ({ item }) => {
           
           <div className="text-right">
             <div className="text-primary-600 font-medium">
-              ${itemTotal.toFixed(2)}
+              ${typeof itemTotal === 'number' ? itemTotal.toFixed(2) : '0.00'}
             </div>
             <div className="text-sm text-gray-500">
-              ${item.price.toFixed(2)} each
+              ${typeof item.price === 'number' ? item.price.toFixed(2) : '0.00'} each
             </div>
           </div>
         </div>

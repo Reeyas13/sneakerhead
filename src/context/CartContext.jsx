@@ -189,9 +189,13 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Calculate cart totals
+  // Calculate cart totals with type checking
   const cartTotal = cartItems.reduce(
-    (total, item) => total + (item.price * item.quantity),
+    (total, item) => {
+      const price = typeof item.price === 'number' ? item.price : 0;
+      const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+      return total + (price * quantity);
+    },
     0
   );
 

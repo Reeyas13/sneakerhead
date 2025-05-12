@@ -25,14 +25,16 @@ const CheckoutForm = () => {
   const [orderProcessing, setOrderProcessing] = useState(false);
 
   // Calculate shipping cost (free shipping over $100)
-  const shippingCost = cartTotal > 100 ? 0 : 10;
+  const shippingCost = typeof cartTotal === 'number' && cartTotal > 100 ? 0 : 10;
   
   // Calculate tax (13% tax rate)
   const taxRate = 0.13;
-  const taxAmount = cartTotal * taxRate;
+  const taxAmount = typeof cartTotal === 'number' ? cartTotal * taxRate : 0;
   
-  // Calculate order total
-  const orderTotal = cartTotal + shippingCost + taxAmount;
+  // Calculate order total - ensure it's a valid number
+  const orderTotal = (typeof cartTotal === 'number' ? cartTotal : 0) + 
+                     (typeof shippingCost === 'number' ? shippingCost : 0) + 
+                     (typeof taxAmount === 'number' ? taxAmount : 0);
 
   // Pre-fill form with user data if available
   useEffect(() => {
@@ -85,14 +87,18 @@ const CheckoutForm = () => {
       try {
         setOrderProcessing(true);
         
-        // Prepare order items
-        const orderItems = cartItems.map(item => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.price,
-          size: item.size,
-          color: item.color
-        }));
+        // Prepare order items with type checking for price
+        const orderItems = cartItems.map(item => {
+          // Ensure price is a valid number, defaulting to 0 if not
+          const price = typeof item.price === 'number' ? item.price : 0;
+          return {
+            productId: item.productId,
+            quantity: typeof item.quantity === 'number' ? item.quantity : 1,
+            price: price,
+            size: item.size || null,
+            color: item.color || null
+          };
+        });
         
         // Create order
         const orderData = {
@@ -314,7 +320,7 @@ const CheckoutForm = () => {
                     {item.size && <span className="text-sm text-gray-600 ml-2">(Size: {item.size})</span>}
                     {item.color && <span className="text-sm text-gray-600 ml-1">(Color: {item.color})</span>}
                   </div>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span>${typeof item.price === 'number' && typeof item.quantity === 'number' ? (item.price * item.quantity).toFixed(2) : '0.00'}</span>
                 </div>
               ))}
             </div>
@@ -322,23 +328,23 @@ const CheckoutForm = () => {
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>${typeof cartTotal === 'number' ? cartTotal.toFixed(2) : '0.00'}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping:</span>
                 {shippingCost === 0 ? (
                   <span className="text-green-600">Free</span>
                 ) : (
-                  <span>${shippingCost.toFixed(2)}</span>
+                  <span>${typeof shippingCost === 'number' ? shippingCost.toFixed(2) : '0.00'}</span>
                 )}
               </div>
               <div className="flex justify-between">
                 <span>Tax (13%):</span>
-                <span>${taxAmount.toFixed(2)}</span>
+                <span>${typeof taxAmount === 'number' ? taxAmount.toFixed(2) : '0.00'}</span>
               </div>
               <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
                 <span>Total:</span>
-                <span>${orderTotal.toFixed(2)}</span>
+                <span>${typeof orderTotal === 'number' ? orderTotal.toFixed(2) : '0.00'}</span>
               </div>
             </div>
           </div>
